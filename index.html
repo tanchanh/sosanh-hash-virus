@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: white;
+            /* Ensure the iframe has a white background */
+        }
+    </style>
+</head>
+
+<body>
+    <!DOCTYPE html>
+    <html lang="vi">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>So Sánh File / Hash / Kiểm Virus - D.T.Chánh</title>
+        <style>
+            body {
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                background-color: #f3f4f6;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 0.5rem;
+                box-sizing: border-box;
+            }
+
+            .main-content {
+                width: 100%;
+                max-width: 32rem;
+                /* Giới hạn chiều rộng nếu cần */
+            }
+
+            .title {
+                font-size: 1.4rem;
+                margin-bottom: 0.5rem;
+                text-align: center;
+                color: #1f2937;
+            }
+
+            .input-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .label {
+                display: block;
+                font-size: 1.2rem;
+                /* Đặt cố định 1.2rem */
+                font-weight: 500;
+                color: #000000;
+                margin-bottom: 0.5rem;
+            }
+
+            .file-input-wrapper {
+                position: relative;
+                cursor: pointer;
+                width: 100%;
+                /* Đảm bảo bao phủ toàn bộ chiều rộng */
+                box-sizing: border-box;
+                /* Đảm bảo padding và border không làm tăng chiều rộng */
+            }
+
+            .main-btn {
+                display: block;
+                padding: 0.5rem 1rem;
+                background-color: #6D20B5;
+                /* Màu nền mới */
+                color: white;
+                /* Chữ trắng */
+                border: none;
+                /* Không viền */
+                border-radius: 0.75rem;
+                /* Bo tròn nhiều hơn */
+                font-size: 1.2rem;
+                /* Đặt cố định 1.2rem */
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+                transition: background-color 0.2s ease-in-out;
+                width: 100%;
+                /* Chiếm toàn bộ chiều rộng */
+                margin-top: 0;
+                /* Loại bỏ margin-top khỏi các nút chọn file */
+                box-sizing: border-box;
+                /* Đảm bảo padding không làm tăng chiều rộng */
+            }
+
+            .main-btn:hover {
+                background-color: #5a1a95;
+                /* Màu nền khi hover */
+            }
+
+            .file-input {
+                opacity: 0;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .file-name {
+                margin-top: 0.5rem;
+                font-size: 1.2rem;
+                /* Đặt cố định 1.2rem */
+                color: #000000;
+            }
+
+            .file-hash {
+                font-size: 1rem;
+                /* Đặt cố định 1.2rem */
+                color: #000000;
+                word-break: break-all;
+                margin-top: 0.25rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                /* Khoảng cách an toàn giữa hash và nút sao chép */
+            }
+
+            .action-btn {
+                padding: 0.3rem 0.6rem;
+                background-color: #9ca3af;
+                color: white;
+                border: none;
+                border-radius: 0.75rem;
+                /* Bo tròn như nút chính */
+                cursor: pointer;
+                font-size: 1.2rem;
+                /* Đặt cố định 1.2rem */
+                transition: background-color 0.2s;
+                white-space: nowrap;
+                text-align: center;
+                line-height: 1.2;
+                flex-shrink: 0;
+                /* Ngăn chặn co ép nút khi chuỗi hash quá dài */
+            }
+
+            .action-btn br {
+                display: none;
+                /* Mặc định ẩn thẻ xuống dòng trên màn hình lớn */
+            }
+
+            @media (max-width: 480px) {
+                .action-btn {
+                    white-space: normal;
+                    /* Cho phép tự động xuống dòng trên mobile */
+                    padding: 0.3rem 0.4rem;
+                    min-width: 4.5rem;
+                    /* Đảm bảo đủ chiều rộng để chữ "Sao Chép" không bị vỡ vụn từng chữ cái */
+                }
+
+                .action-btn br {
+                    display: block;
+                    /* Hiện thẻ xuống dòng để chia đôi chữ trên mobile */
+                }
+            }
+
+            .action-btn:hover {
+                background-color: #6b7280;
+            }
+
+            .compare-btn {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                background-color: #4f46e5;
+                color: #ffffff;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                /* Bo tròn nhiều hơn */
+                border: none;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+                display: none;
+            }
+
+            .compare-btn:hover {
+                background-color: #4338ca;
+            }
+
+            .compare-btn:active {
+                transform: scale(0.98);
+            }
+
+            .compare-btn:disabled {
+                background-color: #9ca3af;
+                cursor: not-allowed;
+            }
+
+            .result-box {
+                margin-top: 2rem;
+                padding: 1rem;
+                border-radius: 0.75rem;
+                /* Bo tròn nhiều hơn */
+                text-align: center;
+                font-weight: 600;
+                font-size: 1.2rem;
+                /* Giữ nguyên */
+                transition: opacity 0.3s ease-in-out;
+                opacity: 0;
+                color: #000000;
+            }
+
+            .result-box.visible {
+                opacity: 1;
+            }
+
+            .result-box.yellow {
+                background-color: #fffbeb;
+                color: #000000;
+            }
+
+            .result-box.blue {
+                background-color: #eff6ff;
+                color: #000000;
+            }
+
+            .result-box.green {
+                background-color: #ecfdf5;
+                color: #000000;
+            }
+
+            .result-box.red {
+                background-color: #fef2f2;
+                color: #000000;
+            }
+
+            .hash-input-group {
+                margin-top: 1.5rem;
+                width: 100%;
+                /* Đảm bảo chiều rộng bằng nút chọn file */
+            }
+
+            .hash-input {
+                flex: 1;
+                /* Tự động kéo giãn lấy phần không gian còn lại */
+                min-width: 0;
+                /* Cho phép ô nhập liệu co lại trên màn hình siêu nhỏ */
+                padding: 0.5rem;
+                border: 2px solid #d1d5db;
+                border-radius: 0.75rem;
+                /* Bo tròn nhiều hơn */
+                font-size: 1rem;
+                /* Đặt cố định 1.2rem */
+                display: inline-block;
+            }
+
+            .hash-input::placeholder {
+                /* Giữ màu xám cho placeholder */
+                color: #9ca3af;
+            }
+
+            .hash-input.match {
+                background-color: #ecfdf5;
+                border-color: #047857;
+            }
+
+            .file-hash.match {
+                background-color: #ecfdf5;
+                border-radius: 0.25rem;
+                padding: 0.25rem;
+            }
+
+            .hash-input-container {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                /* Đảm bảo chiều rộng bằng nút chọn file */
+                gap: 0.5rem;
+                /* Khoảng cách giữa các nút và ô nhập liệu */
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="main-content">
+            <h2 class="title">So Sánh File / Hash / Kiểm Virus</h2>
+            <div style="text-align: right; font-size: 1.2rem; color: #000000; margin: 0 0 1.5rem 0;">
+                D.T.Chánh</div>
+
+            <div class="input-group">
+                <div class="file-input-wrapper">
+                    <label for="file1" class="main-btn">Chọn File 1</label>
+                    <input type="file" id="file1" class="file-input" />
+                </div>
+                <p id="file1-name" class="file-name"></p>
+                <p id="file1-hash" class="file-hash"></p>
+            </div>
+
+            <div class="input-group">
+                <div class="file-input-wrapper">
+                    <label for="file2" class="main-btn">Chọn File 2</label>
+                    <input type="file" id="file2" class="file-input" />
+                </div>
+                <p id="file2-name" class="file-name"></p>
+                <p id="file2-hash" class="file-hash"></p>
+            </div>
+
+            <button id="compareBtn" class="compare-btn">
+                So Sánh
+            </button>
+
+            <div id="result" class="result-box"></div>
+
+            <div class="hash-input-group">
+                <label class="label"><strong>Nhập Hash Để So Sánh / Kiểm Virus Online:</strong></label>
+                <div class="hash-input-container">
+                    <input type="text" id="inputHash" class="hash-input" placeholder="Nhập SHA256 để kiểm tra...">
+                    <button id="clearHashBtn" class="action-btn">Xoá</button>
+                    <button id="pasteHashBtn" class="action-btn">Dán</button>
+                </div>
+            </div>
+
+            <button class="main-btn" style="margin-top: 1.5rem;"
+                onclick="const hash = document.getElementById('inputHash').value.trim(); window.open(hash ? 'https://www.virustotal.com/gui/file/' + hash : 'https://www.virustotal.com', '_blank');">
+                Kiểm Virus Online
+            </button>
+        </div>
+
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const file1Input = document.getElementById('file1');
+                const file2Input = document.getElementById('file2');
+                const file1Name = document.getElementById('file1-name');
+                const file2Name = document.getElementById('file2-name');
+                const file1Hash = document.getElementById('file1-hash');
+                const file2Hash = document.getElementById('file2-hash');
+                const resultDiv = document.getElementById('result');
+                const inputHash = document.getElementById('inputHash');
+                const clearHashBtn = document.getElementById('clearHashBtn');
+                const pasteHashBtn = document.getElementById('pasteHashBtn');
+
+                let currentHash1 = null;
+                let currentHash2 = null;
+
+                // Hàm định dạng kích thước file theo đơn vị phù hợp
+                function formatBytes(bytes) {
+                    if (bytes === 0) return '0 B';
+                    const k = 1024;
+                    const sizes = ['B', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
+                    return size + ' ' + sizes[i];
+                }
+
+                // Hàm tính SHA256
+                async function calculateSHA256(file) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                }
+
+                // Hàm sao chép hash vào clipboard
+                async function copyToClipboard(text, element) {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        const original = element.innerHTML;
+                        element.innerHTML = 'Sao <br>Chép!';
+                        setTimeout(() => {
+                            element.innerHTML = original;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Không thể sao chép hash:', err);
+                    }
+                }
+
+                // Hàm so sánh hash nhập vào với hash của file
+                function compareInputHash() {
+                    const input = inputHash.value.trim();
+                    const hash1 = currentHash1;
+                    const hash2 = currentHash2;
+
+                    // Reset màu nền
+                    inputHash.classList.remove('match');
+                    file1Hash.classList.remove('match');
+                    file2Hash.classList.remove('match');
+
+                    if (!hash1 && !hash2) {
+                        showResult('Vui lòng chọn file để so sánh hash.', 'yellow');
+                        return;
+                    }
+
+                    if (input.length === 64) {
+                        let matchCount = 0;
+
+                        if (input.toLowerCase() === hash1?.toLowerCase()) {
+                            inputHash.classList.add('match');
+                            file1Hash.classList.add('match');
+                            matchCount++;
+                        }
+
+                        if (input.toLowerCase() === hash2?.toLowerCase()) {
+                            inputHash.classList.add('match');
+                            file2Hash.classList.add('match');
+                            matchCount++;
+                        }
+
+                        if (matchCount === 0) {
+                            showResult('Hash không trùng với cả hai file.', 'red');
+                        } else if (matchCount === 2) {
+                            showResult('Hash trùng với cả hai file.', 'green');
+                        } else if (input.toLowerCase() === hash1?.toLowerCase()) {
+                            showResult('Hash trùng với File 1.', 'green');
+                        } else if (input.toLowerCase() === hash2?.toLowerCase()) {
+                            showResult('Hash trùng với File 2.', 'green');
+                        }
+                    } else if (input) {
+                        showResult('Hash không hợp lệ (phải có 64 ký tự hex).', 'red');
+                    }
+                }
+
+                // Hàm xóa hash
+                function clearInputHash() {
+                    inputHash.value = '';
+                    inputHash.classList.remove('match');
+                    file1Hash.classList.remove('match');
+                    file2Hash.classList.remove('match');
+                    resultDiv.className = 'result-box';
+                    resultDiv.textContent = '';
+                }
+
+                // Hàm so sánh hash của 2 file
+                async function compareFiles() {
+                    if (!currentHash1 || !currentHash2) {
+                        showResult('Vui lòng chọn cả hai file để so sánh.', 'yellow');
+                        return;
+                    }
+
+                    showResult('Đang so sánh...', 'blue');
+
+                    try {
+                        // So sánh hash
+                        if (currentHash1 === currentHash2) {
+                            showResult('Hai file hoàn toàn trùng khớp.', 'green');
+                        } else {
+                            showResult('Hai file KHÔNG trùng khớp.', 'red');
+                        }
+
+                        // So sánh với hash nhập vào (nếu có)
+                        compareInputHash();
+
+                    } catch (error) {
+                        console.error("Lỗi khi so sánh file:", error);
+                        showResult('Đã xảy ra lỗi khi so sánh file.', 'red');
+                    }
+                }
+
+                // Hiển thị tên file và hash khi chọn
+                file1Input.addEventListener('change', async () => {
+                    const file = file1Input.files[0];
+                    if (file) {
+                        file1Name.innerHTML = `<strong>File đã chọn:</strong> ${file.name} (${formatBytes(file.size)})`;
+                        file1Hash.innerHTML = 'Đang tính hash...';
+                        try {
+                            const hash = await calculateSHA256(file);
+                            currentHash1 = hash;
+                            file1Hash.innerHTML = `<div><strong>SHA256:</strong> ${hash}</div><button class="action-btn" onclick="copyToClipboard('${hash}', this)">Sao <br>Chép</button>`;
+                            if (file2Input.files[0]) {
+                                compareFiles();
+                            }
+                        } catch (e) {
+                            file1Hash.innerHTML = 'Lỗi tính hash';
+                        }
+                    } else {
+                        file1Name.innerHTML = '';
+                        file1Hash.innerHTML = '';
+                        currentHash1 = null;
+                    }
+                });
+
+                file2Input.addEventListener('change', async () => {
+                    const file = file2Input.files[0];
+                    if (file) {
+                        file2Name.innerHTML = `<strong>File đã chọn:</strong> ${file.name} (${formatBytes(file.size)})`;
+                        file2Hash.innerHTML = 'Đang tính hash...';
+                        try {
+                            const hash = await calculateSHA256(file);
+                            currentHash2 = hash;
+                            file2Hash.innerHTML = `<div><strong>SHA256:</strong> ${hash}</div><button class="action-btn" onclick="copyToClipboard('${hash}', this)">Sao <br>Chép</button>`;
+                            if (file1Input.files[0]) {
+                                compareFiles();
+                            }
+                        } catch (e) {
+                            file2Hash.innerHTML = 'Lỗi tính hash';
+                        }
+                    } else {
+                        file2Name.innerHTML = '';
+                        file2Hash.innerHTML = '';
+                        currentHash2 = null;
+                    }
+                });
+
+                // Sự kiện nhập hash
+                inputHash.addEventListener('input', compareInputHash);
+
+                // Sự kiện nhấn nút Xoá
+                clearHashBtn.addEventListener('click', clearInputHash);
+
+                // Sự kiện nhấn nút Dán để dán từ clipboard
+                pasteHashBtn.addEventListener('click', async () => {
+                    try {
+                        const text = await navigator.clipboard.readText();
+                        inputHash.value = text.trim();
+                        compareInputHash(); // Tự động chạy so sánh sau khi dán
+                    } catch (err) {
+                        console.error('Không thể đọc dữ liệu từ clipboard:', err);
+                        alert('Không thể truy cập clipboard của bạn. Vui lòng tự dán thủ công.');
+                    }
+                });
+
+                /**
+                 * Hiển thị kết quả trên giao diện
+                 * @param {string} message - Thông điệp kết quả
+                 * @param {string} type - Loại kết quả ('yellow', 'blue', 'green', 'red')
+                 */
+                function showResult(message, type) {
+                    resultDiv.textContent = message;
+                    resultDiv.className = `result-box visible ${type}`;
+                }
+
+                // Gắn hàm copyToClipboard vào window để có thể gọi từ HTML
+                window.copyToClipboard = copyToClipboard;
+            });
+        </script>
+    </body>
+
+    </html>
+
+
+
+    <script>
+
+    </script>
+</body>
+
+</html>
